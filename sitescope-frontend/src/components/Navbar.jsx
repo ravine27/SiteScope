@@ -23,12 +23,12 @@ export default function Navbar({ theme, toggleTheme }) {
           </button>
           
           <a 
-            href="https://github.com/ravine27/SiteScope" 
+            href="https://github.com/ravine27" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="icon-btn"
-            title="GitHub Repository"
-            aria-label="GitHub Repo"
+            title="GitHub Profile"
+            aria-label="GitHub Profile"
           >
             <Github size={18} />
           </a>
