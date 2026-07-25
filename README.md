@@ -10,7 +10,23 @@ Built with a **Spring Boot 3.x** REST API backend and a **React 19 + Vite** resp
 
 ---
 
-## 🛠️ 1. Setup Guide
+## 🏗️ 1. Architectural Design Decisions & Reasoning
+
+### **Decision 1: Stateless On-Demand Real-Time Architecture (No Database in MVP)**
+- **Design**: The backend analyzes requested URLs dynamically in real time without persisting audit history to a database.
+- **Reasoning**: Website health, latency, and SEO metrics represent a real-time snapshot of public websites. Introducing a database for the MVP would add schema migrations, persistence overhead, and storage costs without adding user value prior to authentication. A stateless backend allows instant horizontal scaling on cloud platforms like Render, lower memory consumption, and zero cold-storage latency.
+
+### **Decision 2: Decoupled Single-Responsibility Services (`HtmlParser`, `HealthScore`, `Recommendation`)**
+- **Design**: Separated HTML parsing (`HtmlParserService`), health score calculation (`HealthScoreService`), and recommendation generation (`RecommendationService`) into dedicated Spring `@Service` components.
+- **Reasoning**: Decoupling HTML extraction from evaluation ensures high maintainability and unit testability. If scoring rules change (e.g., adding Lighthouse integration or modifying point weights), or if new recommendation rules are introduced for accessibility, developers can edit the relevant service independently without touching Jsoup parsing logic or REST controller handlers.
+
+### **Decision 3: Two-Stage Docker Containerization for Cloud Deployment**
+- **Design**: Created a 2-stage `Dockerfile` (`maven:3.9.6-eclipse-temurin-17` for compilation and `eclipse-temurin:17-jre` for runtime execution).
+- **Reasoning**: Compiling Spring Boot inside Docker guarantees environment consistency across developer OS and cloud environments. Separating the build stage from the runtime stage strips out Maven source artifacts and compiler tools, reducing the production Docker image size from ~700MB to ~200MB. This drastically speeds up deployment build times and improves container security on Render.
+
+---
+
+## 🛠️ 2. Setup Guide
 
 ### Prerequisites
 - **Java Development Kit (JDK)**: Java 17 or Java 21 LTS (`java -version`)
@@ -74,7 +90,7 @@ docker run -p 8080:8080 sitescope-backend
 
 ---
 
-## 📡 2. API Contract Specification
+## 📡 3. API Contract Specification
 
 ### **Root Health Endpoint**
 - **URL**: `GET /`
@@ -154,22 +170,6 @@ docker run -p 8080:8080 sitescope-backend
 - `415 Unsupported Media Type`: Non-HTML content types (e.g., PDFs, images, JSON).
 - `502 Bad Gateway`: Target website DNS resolution failure or network connection refused.
 - `504 Gateway Timeout`: Target website response timeout exceeding 10,000 ms.
-
----
-
-## 🏗️ 3. Architectural Design Decisions & Reasoning
-
-### **Decision 1: Stateless On-Demand Real-Time Architecture (No Database in MVP)**
-- **Design**: The backend analyzes requested URLs dynamically in real time without persisting audit history to a database.
-- **Reasoning**: Website health, latency, and SEO metrics represent a real-time snapshot of public websites. Introducing a database for the MVP would add schema migrations, persistence overhead, and storage costs without adding user value prior to authentication. A stateless backend allows instant horizontal scaling on cloud platforms like Render, lower memory consumption, and zero cold-storage latency.
-
-### **Decision 2: Decoupled Single-Responsibility Services (`HtmlParser`, `HealthScore`, `Recommendation`)**
-- **Design**: Separated HTML parsing (`HtmlParserService`), health score calculation (`HealthScoreService`), and recommendation generation (`RecommendationService`) into dedicated Spring `@Service` components.
-- **Reasoning**: Decoupling HTML extraction from evaluation ensures high maintainability and unit testability. If scoring rules change (e.g., adding Lighthouse integration or modifying point weights), or if new recommendation rules are introduced for accessibility, developers can edit the relevant service independently without touching Jsoup parsing logic or REST controller handlers.
-
-### **Decision 3: Two-Stage Docker Containerization for Cloud Deployment**
-- **Design**: Created a 2-stage `Dockerfile` (`maven:3.9.6-eclipse-temurin-17` for compilation and `eclipse-temurin:17-jre` for runtime execution).
-- **Reasoning**: Compiling Spring Boot inside Docker guarantees environment consistency across developer OS and cloud environments. Separating the build stage from the runtime stage strips out Maven source artifacts and compiler tools, reducing the production Docker image size from ~700MB to ~200MB. This drastically speeds up deployment build times and improves container security on Render.
 
 ---
 
