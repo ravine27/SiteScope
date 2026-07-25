@@ -23,7 +23,7 @@ export default function Navbar({ theme, toggleTheme }) {
           </button>
           
           <a 
-            href="https://github.com" 
+            href="https://github.com/ravine27/SiteScope" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="icon-btn"
