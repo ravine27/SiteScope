@@ -1,6 +1,7 @@
 # SiteScope — Website Health & SEO Analyzer 🚀
 
 **Author & Developer**: Radha Agarwal  
+**Training Task**: [Built for Digital Heroes Training Task](https://digitalheroesco.com)  
 **Live Backend API**: `https://sitescope-backend-am1d.onrender.com`  
 **GitHub Repository**: `https://github.com/ravine27/SiteScope`
 
